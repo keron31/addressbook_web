@@ -29,6 +29,7 @@ export default function Header() {
                 text: "You are logged in!",
             });
             saveToSessionStorage(response);
+            window.location.href = "/";
         } else {
             Swal.fire({
                 icon: "error",
@@ -50,6 +51,7 @@ export default function Header() {
                 text: "You are registered!",
             });
             saveToSessionStorage(response);
+            window.location.href = "/";
         } else {
             Swal.fire({
                 icon: "error",
@@ -66,13 +68,26 @@ export default function Header() {
         }, true);
         if (response) {
             sessionStorage.clear();
-            window.location.href = "/login";
+            window.location.href = "/";
         }
     };
 
-    const DisplayUnloggedOptions = () => {
+    const DisplayLoggedOptions = () => {
         return (
             <div className="form-group text-center">
+                <span className="text-xl-left">You are logged in!</span>
+                <button className="btn btn-primary btn-lg" type="button" onClick={handleLogout}>Logout</button>
+            </div>
+        );
+    }
+
+    return (
+        <React.Fragment>
+            <div className="header">
+                {sessionStorage.getItem('accessToken') ? (
+                    <DisplayLoggedOptions />
+                ) : (
+                    <div className="form-group text-center">
                 <button className="btn btn-primary btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
                 <div className="modal fade" id="loginModal" tabIndex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
                     <div className="modal-dialog">
@@ -138,25 +153,6 @@ export default function Header() {
                     </div>
                 </div>
             </div>
-        );
-    }
-
-    const DisplayLoggedOptions = () => {
-        return (
-            <div className="form-group">
-                <span className="text-xl-left">You are logged in!</span>
-                <button className="btn btn-primary btn-lg" type="button" onClick={handleLogout}>Logout</button>
-            </div>
-        );
-    }
-
-    return (
-        <React.Fragment>
-            <div className="header">
-                {sessionStorage.getItem('accessToken') ? (
-                    <DisplayLoggedOptions />
-                ) : (
-                    <DisplayUnloggedOptions />
                 )}
             </div>
         </React.Fragment>

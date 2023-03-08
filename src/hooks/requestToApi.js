@@ -29,7 +29,7 @@ async function requestToApi(url, method, body, authorization) {
                 return requestToApi(url, method, body, authorization);
             } else {
                 sessionStorage.clear();
-                window.location.href = "/login";
+                window.location.href = "/";
             }
         } else if (response.status === 200) {
             return await response.json();

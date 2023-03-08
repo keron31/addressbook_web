@@ -1,18 +1,17 @@
-import React, {useEffect, useState} from "react";
-import { Outlet } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Outlet, NavLink } from "react-router-dom";
 import Header from "./PartialPages/HeaderPartialPage";
 import Footer from "./PartialPages/FooterPartialPage";
 import requestToApi from "./hooks/requestToApi";
 import { variables } from "./Variables";
 
-export default function Home() {
+export default function Contacts() {
     const [contacts, setContacts] = useState([]);
 
     useEffect(() => {
         const getContacts = async () => {
             const response = await requestToApi(variables.GET_CONTACTS_URL, "GET", null, false);
             if (response) {
-                console.log(response);
                 setContacts(response);
             }
         }
@@ -20,7 +19,7 @@ export default function Home() {
     }, []);
 
     const DisplayContactsTable = () => {
-        if(contacts.length === 0) {
+        if (contacts.length === 0) {
             return <h1>No contacts</h1>
         }
         return (
@@ -56,7 +55,7 @@ export default function Home() {
     }
 
     return (
-                <div>
+        <div>
             <div className="app sidebar-mini ltr light-mode">
                 <div className="page">
                     <div className="page-main">
@@ -64,7 +63,7 @@ export default function Home() {
                         <div className="main-content mt-0">
                             <Outlet />
                             <div className="side-app">
-                                <div className="main-container container-fluid" style={{marginTop:'80px'}}>
+                                <div className="main-container container-fluid" style={{ marginTop: '80px' }}>
                                     <div className="col-md-12 col-lg-12 col-xl-12">
                                         <div className="card">
                                             <div className="card-header">
@@ -77,6 +76,10 @@ export default function Home() {
                                     </div>
                                 </div>
                             </div>
+                            <NavLink to="/new-contact" className="btn btn-primary btn-block float-end my-2">
+                                <i className="fa fa-plus-square me-2"></i>
+                                Add new contact
+                            </NavLink>
                         </div>
                     </div>
                     <Footer />
