@@ -39,8 +39,50 @@ export default function Header() {
         }
     };
 
+    // Check password strength and return true if it's strong enough
+    const validatePassword = (password) => {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        if (regex.test(password)) {
+            Swal.fire({
+                icon: "warning",
+                title: "Invalid password",
+                text:
+                    "Password must contain at least 8 characters, including at least one uppercase letter, one lowercase letter, one number, and one special character",
+            });
+            return false;
+        }
+        return true;
+    };
+
+    // checking the strength of the password on the fly as you type it
+    const [passwordStrength, setPasswordStrength] = useState("");
+    const [passwordStrengthColor, setPasswordStrengthColor] = useState("");
+    const handlePasswordChange = (e) => {
+        setPasswordRegister(e.target.value);
+        const password = e.target.value;
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (password.length < 8) {
+            setPasswordStrength("Too short");
+            setPasswordStrengthColor("red");
+        } else if (password.length < 12) {
+            setPasswordStrength("Weak");
+            setPasswordStrengthColor("orange");
+        } else if (regex.test(password)) {
+            setPasswordStrength("Strong");
+            setPasswordStrengthColor("blue");
+        } else {
+            setPasswordStrength("Very strong");
+            setPasswordStrengthColor("green");
+        }
+    };
+
     const registerHandleSubmit = async e => {
         e.preventDefault();
+
+        if (!validatePassword(passwordRegister)) {
+            return;
+        }
 
         var response = await requestToApi(variables.REGISTER_URL, "POST", { firstName, lastName, email: emailRegister, password: passwordRegister }, false);
 
@@ -88,71 +130,72 @@ export default function Header() {
                     <DisplayLoggedOptions />
                 ) : (
                     <div className="form-group text-center">
-                <button className="btn btn-primary btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
-                <div className="modal fade" id="loginModal" tabIndex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title" id="loginModalLabel">Login</h5>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button className="btn btn-primary btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+                        <div className="modal fade" id="loginModal" tabIndex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+                            <div className="modal-dialog">
+                                <div className="modal-content">
+                                    <div className="modal-header">
+                                        <h5 className="modal-title" id="loginModalLabel">Login</h5>
+                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div className="modal-body">
+                                        <form onSubmit={loginHandleSubmit}>
+                                            <div className="mb-3">
+                                                <label htmlFor="loginEmail" className="form-label">Email address</label>
+                                                <input type="email" className="form-control" id="loginEmail" aria-describedby="emailHelp" onChange={(e) => setEmailLogin(e.target.value)} />
+                                                <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
+                                            </div>
+                                            <div className="mb-3">
+                                                <label htmlFor="loginPassword" className="form-label">Password</label>
+                                                <input type="password" className="form-control" id="loginPassword" onChange={(e) => setPasswordLogin(e.target.value)} />
+                                            </div>
+                                            <div className="btn-group" role="group" aria-label="Basic example">
+                                                <button type="submit" className="btn btn-primary">Submit</button>
+                                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="modal-body">
-                                <form onSubmit={loginHandleSubmit}>
-                                    <div className="mb-3">
-                                        <label htmlFor="loginEmail" className="form-label">Email address</label>
-                                        <input type="email" className="form-control" id="loginEmail" aria-describedby="emailHelp" onChange={(e) => setEmailLogin(e.target.value)} />
-                                        <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
+                        </div>
+                        <button className="btn btn-primary btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#registerModal">Register</button>
+                        <div className="modal fade" id="registerModal" tabIndex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+                            <div className="modal-dialog">
+                                <div className="modal-content">
+                                    <div className="modal-header">
+                                        <h5 className="modal-title" id="registerModalLabel">Register</h5>
+                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="loginPassword" className="form-label">Password</label>
-                                        <input type="password" className="form-control" id="loginPassword" onChange={(e) => setPasswordLogin(e.target.value)} />
+                                    <div className="modal-body">
+                                        <form onSubmit={registerHandleSubmit}>
+                                            <div className="mb-3">
+                                                <label htmlFor="registerFirstName" className="form-label">First Name</label>
+                                                <input type="text" className="form-control" id="registerFirstName" onChange={(e) => setFirstName(e.target.value)} />
+                                            </div>
+                                            <div className="mb-3">
+                                                <label htmlFor="registerLastName" className="form-label">Last Name</label>
+                                                <input type="text" className="form-control" id="registerLastName" onChange={(e) => setLastName(e.target.value)} />
+                                            </div>
+                                            <div className="mb-3">
+                                                <label htmlFor="registerEmail" className="form-label">Email address</label>
+                                                <input type="email" className="form-control" id="registerEmail" aria-describedby="emailHelp" onChange={(e) => setEmailRegister(e.target.value)} />
+                                                <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
+                                            </div>
+                                            <div className="mb-3">
+                                                <label htmlFor="registerPassword" className="form-label">Password</label>
+                                                <input type="password" className="form-control" id="registerPassword" onChange={handlePasswordChange} />
+                                                <div className="form-text" style={{ color: passwordStrengthColor }}>{passwordStrength}</div>
+                                            </div>
+                                            <div className="btn-group" role="group" aria-label="Basic example">
+                                                <button type="submit" className="btn btn-primary">Submit</button>
+                                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </form>
                                     </div>
-                                    <div className="btn-group" role="group" aria-label="Basic example">
-                                        <button type="submit" className="btn btn-primary">Submit</button>
-                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    </div>
-                                </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <button className="btn btn-primary btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#registerModal">Register</button>
-                <div className="modal fade" id="registerModal" tabIndex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title" id="registerModalLabel">Register</h5>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div className="modal-body">
-                                <form onSubmit={registerHandleSubmit}>
-                                    <div className="mb-3">
-                                        <label htmlFor="registerFirstName" className="form-label">First Name</label>
-                                        <input type="text" className="form-control" id="registerFirstName" onChange={(e) => setFirstName(e.target.value)} />
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="registerLastName" className="form-label">Last Name</label>
-                                        <input type="text" className="form-control" id="registerLastName" onChange={(e) => setLastName(e.target.value)} />
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="registerEmail" className="form-label">Email address</label>
-                                        <input type="email" className="form-control" id="registerEmail" aria-describedby="emailHelp" onChange={(e) => setEmailRegister(e.target.value)} />
-                                        <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
-                                    </div>
-                                    <div className="mb-3">
-                                        <label htmlFor="registerPassword" className="form-label">Password</label>
-                                        <input type="password" className="form-control" id="registerPassword" onChange={(e) => setPasswordRegister(e.target.value)} />
-                                    </div>
-                                    <div className="btn-group" role="group" aria-label="Basic example">
-                                        <button type="submit" className="btn btn-primary">Submit</button>
-                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
                 )}
             </div>
         </React.Fragment>
