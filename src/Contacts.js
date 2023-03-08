@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, Link, useLocation } from "react-router-dom";
 import Header from "./PartialPages/HeaderPartialPage";
 import Footer from "./PartialPages/FooterPartialPage";
 import requestToApi from "./hooks/requestToApi";
 import { variables } from "./Variables";
+import Swal from "sweetalert2";
 
 export default function Contacts() {
+    const location = useLocation();
     const [contacts, setContacts] = useState([]);
 
     useEffect(() => {
@@ -42,9 +44,9 @@ export default function Contacts() {
                                 <td className="text-center align-middle">{contact.lastName}</td>
                                 <td className="text-center align-middle">{contact.email}</td>
                                 <td className="text-center align-middle">
-                                    <button className="btn btn-primary">Details</button>
-                                    <button className="btn btn-primary">Edit</button>
-                                    <button className="btn btn-danger">Delete</button>
+                                    <Link className="btn btn-primary" to={`/details-contact/${contact.id}`} >Details</Link>
+                                    <Link className="btn btn-primary" to={`/edit-contact/${contact.id}`}>Edit</Link>
+                                    <button className="btn btn-danger" onClick={() => deleteContact(contact.id)}>Delete</button>
                                 </td>
                             </tr>
                         )
@@ -54,6 +56,38 @@ export default function Contacts() {
         );
     }
 
+    // Delete category
+    const deleteContact = async (id) => {
+        try {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then(async result => {
+                if (result.isConfirmed) {
+                    const responseToDelete = await requestToApi(variables.DELETE_CONTACT_URL + id, 'DELETE', null, true);
+                    if (responseToDelete) {
+                        Swal.fire(
+                            'Deleted!',
+                            'Your category has been deleted.',
+                            'success'
+                        )
+                        const response = await requestToApi(variables.GET_CONTACTS_URL, 'GET', null, false);
+                        if (response) {
+                            setContacts(response);
+                        }
+                    }
+                }
+            })
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     return (
         <div>
             <div className="app sidebar-mini ltr light-mode">
@@ -61,7 +95,7 @@ export default function Contacts() {
                     <div className="page-main">
                         <Header />
                         <div className="main-content mt-0">
-                            <Outlet />
+                            <Outlet key={location.pathname} />
                             <div className="side-app">
                                 <div className="main-container container-fluid" style={{ marginTop: '80px' }}>
                                     <div className="col-md-12 col-lg-12 col-xl-12">
@@ -76,10 +110,10 @@ export default function Contacts() {
                                     </div>
                                 </div>
                             </div>
-                            <NavLink to="/new-contact" className="btn btn-primary btn-block float-end my-2">
+                            <Link to="/new-contact" className="btn btn-primary btn-block float-end my-2">
                                 <i className="fa fa-plus-square me-2"></i>
                                 Add new contact
-                            </NavLink>
+                            </Link>
                         </div>
                     </div>
                     <Footer />

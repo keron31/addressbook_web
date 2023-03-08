@@ -1,4 +1,6 @@
 export const variables = {
+    NAME_OF_THE_CATEGORY_THAT_ALLOWS_YOU_TO_ENTER_YOUR_SUBCATEGORY: "Inny",
+
     API_URL: "https://localhost:7047",
 
     REGISTER_URL: "https://localhost:7047/auth/register",
@@ -7,6 +9,7 @@ export const variables = {
     LOGOUT_URL: "https://localhost:7047/auth/logout",
 
     ADD_CONTACT_URL: "https://localhost:7047/contacts/create",
+    EDIT_CONTACT_URL: "https://localhost:7047/contacts/update/",
     GET_CONTACTS_URL: "https://localhost:7047/contacts/get-all",
     GET_CONTACT_BY_ID_URL: "https://localhost:7047/contacts/get/",
     DELETE_CONTACT_URL: "https://localhost:7047/contacts/delete/",
